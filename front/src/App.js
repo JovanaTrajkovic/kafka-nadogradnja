@@ -20,17 +20,15 @@ const App = () => {
     return () => {
       socket.disconnect();
     };
+    
   }, []);
 
   useEffect(() => {
     // Formatiranje podataka za grafikon samo ako postoje podaci
     if (data.length > 0) {
-      const chartLabels = data.map((entry) => {
-        const date = new Date(entry.dt * 1000);
-        return date.toLocaleDateString('en-GB'); // Formatiraj datum u "dd/MM/yy"
-      });
+      const chartLabels = data.map((_, index) => (index + 1).toString()); // Indeks + 1 kao labela
 
-      const chartTemperatureData = data.map((entry) => entry.main.temp+ Math.random()*2);
+      const chartTemperatureData = data.map((entry) => entry.difference );
 
       setChartData({
         labels: chartLabels,
@@ -53,13 +51,20 @@ const App = () => {
         ],
       });
     }
-    
   }, [data]);
 
   return (
     <div>
       {/* Prikazivanje grafikona samo ako postoje podaci */}
       {chartData && <Line data={chartData} />}
+      {/* Prikazivanje razlike temperaturi pored prethodnih */}
+      {data.length > 0 && (
+        <ul>
+          {data.map((entry, index) => (
+            <li key={index}>Razlika izmedju minimalne i maksimalne temperature {index + 1}: {entry.difference}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
